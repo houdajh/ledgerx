@@ -1,10 +1,10 @@
 # LedgerX – Monorepo (Java 21 / Spring Boot 3.5.x)
 
-Plateforme pédagogique orientée **apprendre par la pratique** pour se préparer aux entretiens avancés Java/Spring :
+“LedgerX” – une plateforme de gestion de lignes de crédit (crédits, décisions, refinancement, événements & audit), exposée en microservices.
 - **identity-service** : AuthN/AuthZ via **Keycloak** (Resource Server JWT)
-- **credit-service** : JPA / **Specification** / **Criteria** *(à venir S2)*
-- **reporting-service** : projections CQRS & exports *(à venir)*
-- **gateway** : API Gateway *(à venir)*
+- **credit-service** : JPA / **Specification** / **Criteria** 
+- **reporting-service** : projections CQRS & exports 
+- **gateway** : API Gateway 
 
 ---
 
