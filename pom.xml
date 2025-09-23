@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.ledgerx</groupId>
+  <artifactId>ledgerx</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging><!--Ce module ne produit pas de jar/war, c’est uniquement un parent et agrégateur. -->
+
+  <modules>
+    <module>services/identity-service</module>
+    <module>services/credit-service</module>
+    <module>services/reporting-service</module>
+    <module>services/gateway</module>
+  </modules>
+
+  <properties>
+    <java.version>21</java.version>
+    <spring-boot.version>3.5.6</spring-boot.version>
+  </properties>
+
+  <!-- Tous les modules héritent de ce BOM -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- DOIT avoir une version car le BOM ne gère pas les plugins -->
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.12</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.pitest</groupId>
+          <artifactId>pitest-maven</artifactId>
+          <version>1.17.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>
