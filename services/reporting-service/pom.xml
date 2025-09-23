@@ -6,9 +6,9 @@
 		<groupId>com.ledgerx</groupId>
 		<artifactId>ledgerx</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>reporting-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>reporting-service</name>
 	<description>Reporting &amp; Projections (CQRS/exports) for LedgerX</description>
 

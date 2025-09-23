@@ -6,9 +6,9 @@
 		<groupId>com.ledgerx</groupId>
 		<artifactId>ledgerx</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>credit-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>credit-service</name>
 	<description>Credit Line Management (decisions, refinancing) for LedgerX</description>
 
@@ -28,6 +28,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>

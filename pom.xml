@@ -12,6 +12,7 @@
     <module>services/credit-service</module>
     <module>services/reporting-service</module>
     <module>services/gateway</module>
+    <module>libs/common-domain</module>
   </modules>
 
   <properties>
@@ -55,6 +56,17 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <release>21</release>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
 </project>
