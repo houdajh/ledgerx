@@ -26,6 +26,4 @@ public class CreditLineRequest {
     @NotNull(message = "tenantId is required")
     private UUID tenantId;
 
-    // Optional during update
-    private String comment;
 }
