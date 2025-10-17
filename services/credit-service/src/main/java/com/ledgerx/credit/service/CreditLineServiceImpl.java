@@ -2,14 +2,15 @@ package com.ledgerx.credit.service;
 
 import com.ledgerx.credit.domain.entity.CreditLine;
 import com.ledgerx.credit.domain.repository.CreditLineRepository;
-import com.ledgerx.credit.domain.spec.CreditLineSearchCriteria;
-import com.ledgerx.credit.domain.spec.CreditLineSpecification;
+import com.ledgerx.credit.web.spec.CreditLineSearchCriteria;
+import com.ledgerx.credit.web.spec.CreditLineSpecification;
 import com.ledgerx.credit.exception.NotFoundException;
 import com.ledgerx.credit.web.dto.CreditLineRequest;
 import com.ledgerx.credit.web.dto.CreditLineResponse;
 import com.ledgerx.credit.web.mapper.CreditLineMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -71,16 +72,9 @@ public class CreditLineServiceImpl implements CreditLineService {
     }
 
     @Override
-    public List<CreditLineResponse> search(CreditLineSearchCriteria criteria) {
-        Specification<CreditLine> sp=Specification.allOf(
-                CreditLineSpecification.hasTenantId(criteria.getTenantId()),
-                CreditLineSpecification.hasClientId(criteria.getClientId()),
-                CreditLineSpecification.hasStatus(criteria.getStatus()),
-                CreditLineSpecification.hasDevise(criteria.getCurrency()),
-                CreditLineSpecification.hasDateBetween(criteria.getFromDate(),criteria.getToDate()),
-                CreditLineSpecification.hasAmountBetween(criteria.getMinAmount(),criteria.getMaxAmount())
-        );
+    public List<CreditLineResponse> search(CreditLineSearchCriteria criteria, Pageable pageable) {
+        Specification<CreditLine> sp=CreditLineSpecification.build(criteria);
 
-        return creditLineRepository.findAll(sp).stream().map(creditLineMapper::toResponse).toList();
+        return creditLineRepository.findAll(sp,pageable).stream().map(creditLineMapper::toResponse).toList();
     }
 }
