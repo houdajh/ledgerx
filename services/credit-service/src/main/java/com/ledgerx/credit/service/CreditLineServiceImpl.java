@@ -1,5 +1,6 @@
 package com.ledgerx.credit.service;
 
+import com.ledgerx.credit.domain.audit.Audit;
 import com.ledgerx.credit.domain.entity.CreditLine;
 import com.ledgerx.credit.domain.repository.CreditLineRepository;
 import com.ledgerx.credit.web.spec.CreditLineSearchCriteria;
@@ -42,6 +43,7 @@ public class CreditLineServiceImpl implements CreditLineService {
 
     @Override
     @Transactional
+    @Audit(action = "CREATE", resource = "CREDIT_LINE")
     public CreditLineResponse create(CreditLineRequest request) {
         CreditLine creditLine = creditLineMapper.toEntity(request);
         creditLineRepository.save(creditLine);
@@ -50,6 +52,7 @@ public class CreditLineServiceImpl implements CreditLineService {
 
     @Override
     @Transactional
+    @Audit(action = "UPDATE", resource = "CREDIT_LINE")
     public CreditLineResponse update(UUID id, CreditLineRequest request) {
         CreditLine existing = creditLineRepository.findById(id).orElseThrow(()-> new NotFoundException("CreditLine not found"+id));
 
@@ -64,6 +67,7 @@ public class CreditLineServiceImpl implements CreditLineService {
 
     @Override
     @Transactional
+    @Audit(action = "DELETE", resource = "CREDIT_LINE")
     public void softDelete(UUID id) {
         CreditLine creditLine = creditLineRepository.findById(id).orElseThrow();
         creditLine.setDeleted(true);

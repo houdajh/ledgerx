@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface CreditLineRepository extends JpaRepository<CreditLine, UUID>,
         JpaSpecificationExecutor<CreditLine> {
+
 }

@@ -7,6 +7,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,7 +28,9 @@ import java.util.UUID;
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CreditLine {
+@Audited
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class CreditLine extends BaseEntity {
 
     @Id @GeneratedValue
     @EqualsAndHashCode.Include
