@@ -2,7 +2,7 @@ package com.ledgerx.credit.domain.service;
 
 import com.ledgerx.credit.domain.entity.CreditLine;
 import com.ledgerx.credit.domain.repository.CreditLineRepository;
-import com.ledgerx.credit.service.CreditLineServiceImpl;
+import com.ledgerx.credit.service.Impl.CreditLineServiceImpl;
 import com.ledgerx.credit.web.dto.CreditLineRequest;
 import com.ledgerx.credit.web.dto.CreditLineResponse;
 import com.ledgerx.credit.web.mapper.CreditLineMapper;

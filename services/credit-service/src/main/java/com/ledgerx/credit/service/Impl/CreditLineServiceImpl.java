@@ -1,18 +1,22 @@
-package com.ledgerx.credit.service;
+package com.ledgerx.credit.service.Impl;
 
 import com.ledgerx.credit.domain.audit.Audit;
 import com.ledgerx.credit.domain.entity.CreditLine;
 import com.ledgerx.credit.domain.repository.CreditLineRepository;
-import com.ledgerx.credit.web.spec.CreditLineSearchCriteria;
-import com.ledgerx.credit.web.spec.CreditLineSpecification;
 import com.ledgerx.credit.exception.NotFoundException;
+import com.ledgerx.credit.service.CreditLineService;
 import com.ledgerx.credit.web.dto.CreditLineRequest;
 import com.ledgerx.credit.web.dto.CreditLineResponse;
 import com.ledgerx.credit.web.mapper.CreditLineMapper;
+import com.ledgerx.credit.web.spec.CreditLineSearchCriteria;
+import com.ledgerx.credit.web.spec.CreditLineSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,22 +32,25 @@ public class CreditLineServiceImpl implements CreditLineService {
     private final CreditLineMapper creditLineMapper;
 
 
-
     @Override
+    @PreAuthorize("hasRole('READ')")
     public List<CreditLineResponse> findAll() {
         List<CreditLine> creditLines = creditLineRepository.findAll();
         return creditLines.stream().map(creditLineMapper::toResponse).toList();
     }
 
     @Override
+    @PreAuthorize("hasRole('READ')")
+    @Cacheable(value = "creditLines", key = "#id")
     public CreditLineResponse findById(UUID id) {
-        CreditLine creditLine = creditLineRepository.findById(id).orElseThrow(()-> new NotFoundException("CreditLine not found"+id));
+        CreditLine creditLine = creditLineRepository.findById(id).orElseThrow(() -> new NotFoundException("CreditLine not found" + id));
         return creditLineMapper.toResponse(creditLine);
     }
 
     @Override
     @Transactional
     @Audit(action = "CREATE", resource = "CREDIT_LINE")
+    @PreAuthorize("hasRole('WRITE') and #request.tenantId == authentication.details['tenant']")
     public CreditLineResponse create(CreditLineRequest request) {
         CreditLine creditLine = creditLineMapper.toEntity(request);
         creditLineRepository.save(creditLine);
@@ -53,8 +60,10 @@ public class CreditLineServiceImpl implements CreditLineService {
     @Override
     @Transactional
     @Audit(action = "UPDATE", resource = "CREDIT_LINE")
+    @PreAuthorize("hasAuthority('WRITE')")
+    @CacheEvict(value = "creditLines", key = "#id")
     public CreditLineResponse update(UUID id, CreditLineRequest request) {
-        CreditLine existing = creditLineRepository.findById(id).orElseThrow(()-> new NotFoundException("CreditLine not found"+id));
+        CreditLine existing = creditLineRepository.findById(id).orElseThrow(() -> new NotFoundException("CreditLine not found" + id));
 
         existing.setAmount(request.getAmount());
         existing.setCurrency(request.getCurrency());
@@ -68,6 +77,8 @@ public class CreditLineServiceImpl implements CreditLineService {
     @Override
     @Transactional
     @Audit(action = "DELETE", resource = "CREDIT_LINE")
+    @CacheEvict(value = "creditLines", key = "#id")
+    @PreAuthorize("hasAuthority('admin')")
     public void softDelete(UUID id) {
         CreditLine creditLine = creditLineRepository.findById(id).orElseThrow();
         creditLine.setDeleted(true);
@@ -77,8 +88,10 @@ public class CreditLineServiceImpl implements CreditLineService {
 
     @Override
     public List<CreditLineResponse> search(CreditLineSearchCriteria criteria, Pageable pageable) {
-        Specification<CreditLine> sp=CreditLineSpecification.build(criteria);
+        Specification<CreditLine> sp = CreditLineSpecification.build(criteria);
 
-        return creditLineRepository.findAll(sp,pageable).stream().map(creditLineMapper::toResponse).toList();
+        return creditLineRepository.findAll(sp, pageable).stream().map(creditLineMapper::toResponse).toList();
     }
+
+
 }

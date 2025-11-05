@@ -1,5 +1,7 @@
 package com.ledgerx.credit.web.controller;
 
+import com.ledgerx.credit.domain.entity.CreditSimulationHistory;
+import com.ledgerx.credit.domain.repository.CreditSimulationHistoryRepository;
 import com.ledgerx.credit.web.spec.CreditLineSearchCriteria;
 import com.ledgerx.credit.service.CreditLineService;
 import com.ledgerx.credit.web.dto.CreditLineRequest;
@@ -19,13 +21,13 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/credits")
+@RequestMapping("/api/credit-lines")
 public class CreditLineController {
 
     private final CreditLineService creditLineService;
 
     @GetMapping
-    public ResponseEntity<List<CreditLineResponse>> getCreditLines() {
+    public ResponseEntity<List<CreditLineResponse>> getCreditLines(@RequestParam(required = false) String status) {
         return ResponseEntity.ok(creditLineService.findAll());
     }
 
@@ -60,7 +62,5 @@ public class CreditLineController {
         creditLineService.softDelete(id);
         return ResponseEntity.noContent().build();
     }
-
-
 
 }

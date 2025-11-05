@@ -1,5 +1,6 @@
 package com.ledgerx.credit.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -19,19 +20,34 @@ import java.util.stream.Stream;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private CustomAuthEntryPoint customAuthEntryPoint;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(reg -> reg
                         .requestMatchers("/actuator/**", "/public/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/actuator/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("admin")
                         .requestMatchers("/credits/**").hasAnyRole("read", "write", "admin")
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakAuthorities()))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthEntryPoint)
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakAuthorities()))
+                        .authenticationEntryPoint(new CustomJwtAuthEntryPoint())
                 );
+
+
 
         return http.build();
     }
@@ -44,7 +60,7 @@ public class SecurityConfig {
 
     private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
         List<String> realmRoles = extractRealmRoles(jwt);
-        List<String> clientRoles = extractClientRoles(jwt, "ledgerx-api");
+        List<String> clientRoles = extractClientRoles(jwt, "credit-service");
 
         return Stream.concat(realmRoles.stream(), clientRoles.stream())
                 .distinct()

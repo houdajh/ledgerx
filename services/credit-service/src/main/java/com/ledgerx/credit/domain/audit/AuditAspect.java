@@ -4,12 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.security.core.Authentication;
+import org.slf4j.MDC;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 
 @Slf4j
@@ -29,6 +26,14 @@ public class AuditAspect {
             long duration = System.currentTimeMillis() - start;
             log.info("{{\"action\":\"{}\",\"actor\":\"{}\",\"resource\":\"{}\",\"status\":\"SUCCESS\",\"durationMs\":{}}}",
                     audit.action(), actor, audit.resource(), duration);
+            String traceId = MDC.get("traceId");
+
+            log.info(
+                    "{{\"traceId\":\"{}\",\"actor\":\"{}\",\"action\":\"{}\",\"resource\":\"{}\",\"status\":\"SUCCESS\",\"durationMs\":{}}}",
+                    traceId, actor, audit.action(), audit.resource(), duration
+            );
+
+
             return result;
         } catch (Exception ex) {
             long duration = System.currentTimeMillis() - start;
