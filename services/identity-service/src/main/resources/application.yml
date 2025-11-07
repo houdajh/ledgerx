@@ -1,13 +1,1 @@
 # services/identity-service/src/main/resources/application.yml
-server:
-  port: 8081
-
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080/realms/ledgerx
-          # (Spring récupère automatiquement les JWKS depuis l’issuer)
-management:
-  endpoints.web.exposure.include: health,info

@@ -27,7 +27,7 @@ public class CreditLineController {
     private final CreditLineService creditLineService;
 
     @GetMapping
-    public ResponseEntity<List<CreditLineResponse>> getCreditLines(@RequestParam(required = false) String status) {
+    public ResponseEntity<List<CreditLineResponse>> getCreditLines() {
         return ResponseEntity.ok(creditLineService.findAll());
     }
 

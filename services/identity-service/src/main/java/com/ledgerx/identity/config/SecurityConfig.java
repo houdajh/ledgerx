@@ -1,21 +1,12 @@
 package com.ledgerx.identity.config;
 
+import com.ledgerx.common.security.JwtAuthConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Configuration
 @EnableMethodSecurity // enables @PreAuthorize, @Secured, etc.
@@ -26,57 +17,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(reg -> reg
-                        .requestMatchers("/public/**", "/actuator/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("admin")
-                        .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakAuthorities()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/users/**").hasAnyRole("admin", "read")
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtAuthConverter()))
                 );
 
         return http.build();
     }
 
-    /** Configures how to turn a Jwt into GrantedAuthorities. */
-    private JwtAuthenticationConverter keycloakAuthorities() {
-        JwtAuthenticationConverter conv = new JwtAuthenticationConverter();
-        conv.setJwtGrantedAuthoritiesConverter(this::extractAuthorities);
-        return conv;
-    }
-
-
-    /**
-     * Extract roles from Keycloak token structure.
-     * Supports:
-     *   - realm roles  → realm_access.roles
-     *   - client roles → resource_access.ledgerx-api.roles
-     */
-    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
-        List<String> realmRoles = extractRealmRoles(jwt);
-        List<String> clientRoles = extractClientRoles(jwt, "ledgerx-api");
-
-        return Stream.concat(realmRoles.stream(), clientRoles.stream())
-                .distinct()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toList());
-    }
-
-    private List<String> extractRealmRoles(Jwt jwt) {
-        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
-        if (realmAccess != null && realmAccess.get("roles") instanceof List<?> roles) {
-            return roles.stream().map(Object::toString).toList();
-        }
-        return List.of();
-    }
-
-    private List<String> extractClientRoles(Jwt jwt, String clientId) {
-        Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-        if (resourceAccess != null) {
-            Object client = resourceAccess.get(clientId);
-            if (client instanceof Map<?, ?> clientMap && clientMap.get("roles") instanceof List<?> roles) {
-                return roles.stream().map(Object::toString).toList();
-            }
-        }
-        return List.of();
-    }
 }
