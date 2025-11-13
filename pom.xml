@@ -16,6 +16,7 @@
     <module>services/gateway</module>
     <module>libs/common-domain</module>
     <module>services/common-security</module>
+    <module>services/config-server</module>
   </modules>
 
   <properties>

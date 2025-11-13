@@ -1,0 +1,16 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/houdajh/ledgerx-config-repo
+          default-label: master
+          clone-on-start: true
+          username: houdajh
+

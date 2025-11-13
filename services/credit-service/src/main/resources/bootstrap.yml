@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: credit-service  # 👈 must match the filename in your config repo (credit-service.yml)
+  cloud:
+    config:
+      uri: http://localhost:8888  # your Config Server
+      fail-fast: true
+
+# Optional logging or profile info
+logging:
+  level:
+    root: INFO

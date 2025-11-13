@@ -1,3 +1,4 @@
+/*
 package com.ledgerx.identity.config;
 
 import org.springframework.context.annotation.Bean;
@@ -41,3 +42,4 @@ public class DevSecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 }
+*/

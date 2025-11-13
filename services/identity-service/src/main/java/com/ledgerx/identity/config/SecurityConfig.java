@@ -3,14 +3,12 @@ package com.ledgerx.identity.config;
 import com.ledgerx.common.security.JwtAuthConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableMethodSecurity // enables @PreAuthorize, @Secured, etc.
-@Profile("!dev")
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
